@@ -8,15 +8,15 @@ export function Profile({ onBack }: ProfileProps) {
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
-      <header className="bg-blue-600 text-white p-4">
+      <header className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white p-4 shadow-lg">
         <div className="flex items-center gap-3">
           <button 
             onClick={onBack}
-            className="p-1 hover:bg-blue-700 rounded-full transition-colors"
+            className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors backdrop-blur-sm"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1>Profile</h1>
+          <h1 className="font-bold">Profile</h1>
         </div>
       </header>
 

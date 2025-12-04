@@ -33,13 +33,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   return (
     <div className="flex flex-col h-screen bg-gradient-to-b from-blue-600 to-blue-800">
       {/* Top Section - Branding */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 text-white">
-        <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-6 mb-6">
+      <div className="flex-1 flex flex-col items-center justify-center p-6 text-white relative overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-white rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-40 h-40 bg-white rounded-full blur-3xl" />
+        </div>
+        
+        <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-6 mb-6 relative z-10 shadow-lg">
           <Building2 className="w-16 h-16" />
         </div>
-        <h1 className="text-white text-4xl mb-2">WorkLounge</h1>
-        <p className="text-blue-100 text-center mb-2">Meeting Room Booking</p>
-        <div className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-3 py-1.5">
+        <h1 className="text-white text-4xl mb-2 font-bold relative z-10 tracking-tight">WORK LOUNGE</h1>
+        <p className="text-blue-100 text-center mb-2 relative z-10">Meeting Room Booking</p>
+        <div className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-3 py-1.5 relative z-10 shadow-md">
           <Sparkles className="w-4 h-4" />
           <span className="text-sm">AI-Powered Suggestions</span>
         </div>

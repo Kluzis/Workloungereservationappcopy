@@ -169,9 +169,9 @@ export function AISuggestions({ userCredits, onBack, onBookSuggestion }: AISugge
 
               {/* Room Info */}
               <div className="mb-3">
-                <h3 className="text-neutral-900 mb-1">{suggestion.roomName}</h3>
+                <h3 className="text-neutral-900 mb-1 font-medium">{suggestion.roomName}</h3>
                 <div className="flex items-center gap-2 text-sm text-neutral-600">
-                  <MapPin className="w-4 h-4" />
+                  <MapPin className="w-4 h-4 text-blue-600" />
                   <span>{suggestion.locationName}</span>
                 </div>
               </div>

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { ArrowLeft, MapPin, Users, Clock, CreditCard, CheckCircle } from 'lucide-react';
 import type { Location, Room, Booking } from '../App';
+import { LocationMap } from './LocationMap';
+import { LOCATIONS as MAP_LOCATIONS, LOCATION_IMAGES, ROOM_IMAGES } from '../data/locations';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface BookingFlowProps {
   userCredits: number;
@@ -97,15 +100,15 @@ export function BookingFlow({ userCredits, onBack, onComplete }: BookingFlowProp
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
-      <header className="bg-blue-600 text-white p-4">
+      <header className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white p-4 shadow-lg">
         <div className="flex items-center gap-3 mb-4">
           <button 
             onClick={step === 'success' ? onBack : handleBack}
-            className="p-1 hover:bg-blue-700 rounded-full transition-colors"
+            className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors backdrop-blur-sm"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1>
+          <h1 className="font-bold">
             {step === 'success' ? 'Booking Confirmed' : 'Book a Room'}
           </h1>
         </div>
@@ -126,19 +129,49 @@ export function BookingFlow({ userCredits, onBack, onComplete }: BookingFlowProp
         {step === 'location' && (
           <div>
             <h2 className="mb-4 text-neutral-900">Select Location</h2>
+            
+            {/* Map View */}
+            <div className="mb-4">
+              <LocationMap
+                locations={MAP_LOCATIONS}
+                selectedLocationId={selectedLocation?.id}
+                onLocationSelect={(loc) => {
+                  const location = LOCATIONS.find(l => l.id === loc.id);
+                  if (location) handleLocationSelect(location);
+                }}
+              />
+            </div>
+            
             <div className="space-y-3">
-              {LOCATIONS.map(location => (
-                <button
-                  key={location.id}
-                  onClick={() => handleLocationSelect(location)}
-                  className="w-full bg-white border border-neutral-300 p-4 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
-                >
-                  <div className="flex items-center gap-3">
-                    <MapPin className="w-5 h-5 text-blue-600" />
-                    <span className="text-neutral-900">{location.name}</span>
-                  </div>
-                </button>
-              ))}
+              {LOCATIONS.map(location => {
+                const locationImage = LOCATION_IMAGES[location.id] || LOCATION_IMAGES['forum'];
+                return (
+                  <button
+                    key={location.id}
+                    onClick={() => handleLocationSelect(location)}
+                    className={`w-full bg-white border-2 rounded-lg overflow-hidden hover:shadow-md transition-all text-left ${
+                      selectedLocation?.id === location.id
+                        ? 'border-blue-500 shadow-md'
+                        : 'border-neutral-300 hover:border-blue-500'
+                    }`}
+                  >
+                    <div className="relative h-32 overflow-hidden">
+                      <ImageWithFallback
+                        src={locationImage}
+                        alt={location.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <div className="flex items-center gap-2 text-white">
+                          <MapPin className="w-4 h-4" />
+                          <span className="font-medium">{location.name}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -154,30 +187,46 @@ export function BookingFlow({ userCredits, onBack, onComplete }: BookingFlowProp
 
             <h2 className="mb-4 text-neutral-900">Select Room</h2>
             <div className="space-y-3">
-              {ROOMS.map(room => (
-                <button
-                  key={room.id}
-                  onClick={() => handleRoomSelect(room)}
-                  className="w-full bg-white border border-neutral-300 p-4 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-neutral-900">{room.name}</span>
-                    <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
-                      Available
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-neutral-600">
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      <span>{room.capacity} seats</span>
+              {ROOMS.map(room => {
+                const roomImage = ROOM_IMAGES[room.id] || ROOM_IMAGES['room-1'];
+                return (
+                  <button
+                    key={room.id}
+                    onClick={() => handleRoomSelect(room)}
+                    className={`w-full bg-white border-2 rounded-lg overflow-hidden hover:shadow-md transition-all text-left ${
+                      selectedRoom?.id === room.id
+                        ? 'border-blue-500 shadow-md'
+                        : 'border-neutral-300 hover:border-blue-500'
+                    }`}
+                  >
+                    <div className="relative h-40 overflow-hidden">
+                      <ImageWithFallback
+                        src={roomImage}
+                        alt={room.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-3 right-3">
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded backdrop-blur-sm bg-opacity-90">
+                          Available
+                        </span>
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                        <h3 className="text-white font-medium mb-1">{room.name}</h3>
+                        <div className="flex items-center gap-4 text-sm text-white text-opacity-90">
+                          <div className="flex items-center gap-1">
+                            <Users className="w-4 h-4" />
+                            <span>{room.capacity} seats</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <CreditCard className="w-4 h-4" />
+                            <span>{room.credits} credits/30min</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <CreditCard className="w-4 h-4" />
-                      <span>{room.credits} credits/30min</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

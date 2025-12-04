@@ -1,5 +1,7 @@
 import { Calendar, MapPin, CreditCard, User, Clock, Sparkles } from 'lucide-react';
 import type { View, Booking } from '../App';
+import { LOCATIONS, LOCATION_IMAGES } from '../data/locations';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface HomePageProps {
   userCredits: number;
@@ -13,15 +15,15 @@ export function HomePage({ userCredits, upcomingBookings, onNavigate }: HomePage
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <header className="bg-blue-600 text-white p-4">
+      <header className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white p-4 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1>WorkLounge</h1>
+            <h1 className="font-bold tracking-tight">WORK LOUNGE</h1>
             <p className="text-blue-100 text-sm">Welcome back, Daniel</p>
           </div>
           <button 
             onClick={() => onNavigate('profile')}
-            className="p-2 hover:bg-blue-700 rounded-full transition-colors"
+            className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors backdrop-blur-sm"
           >
             <User className="w-6 h-6" />
           </button>
@@ -82,32 +84,44 @@ export function HomePage({ userCredits, upcomingBookings, onNavigate }: HomePage
             </div>
           ) : (
             <div className="space-y-3">
-              {todayBookings.map(booking => (
-                <div 
-                  key={booking.id}
-                  className="bg-white border border-neutral-200 rounded-lg p-4"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h3 className="text-neutral-900">{booking.roomName}</h3>
-                      <p className="text-sm text-neutral-600">{booking.locationName}</p>
+              {todayBookings.map(booking => {
+                const locationImage = LOCATION_IMAGES[booking.locationId] || LOCATION_IMAGES['forum'];
+                return (
+                  <div 
+                    key={booking.id}
+                    className="bg-white border border-neutral-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="relative h-32 overflow-hidden">
+                      <ImageWithFallback
+                        src={locationImage}
+                        alt={booking.locationName}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded backdrop-blur-sm bg-opacity-90">
+                          Confirmed
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                      Confirmed
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-neutral-600">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{booking.time}</span>
+                    <div className="p-4">
+                      <div className="mb-2">
+                        <h3 className="text-neutral-900 font-medium">{booking.roomName}</h3>
+                        <p className="text-sm text-neutral-600">{booking.locationName}</p>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-neutral-600">
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{booking.time}</span>
+                        </div>
+                        <span>•</span>
+                        <span>{booking.duration} min</span>
+                        <span>•</span>
+                        <span>{booking.credits} credits</span>
+                      </div>
                     </div>
-                    <span>•</span>
-                    <span>{booking.duration} min</span>
-                    <span>•</span>
-                    <span>{booking.credits} credits</span>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
@@ -124,24 +138,32 @@ export function HomePage({ userCredits, upcomingBookings, onNavigate }: HomePage
         <section>
           <h2 className="mb-3 text-neutral-900">Locations</h2>
           <div className="grid grid-cols-2 gap-3">
-            {[
-              'Forum Karlín',
-              'BCK Smíchov',
-              'Diamant',
-              'Příkopy',
-              'Dejvice Telehouse',
-              'Pankrác City Point',
-              'Žižkov'
-            ].map(location => (
-              <button
-                key={location}
-                onClick={() => onNavigate('booking')}
-                className="bg-white border border-neutral-200 p-3 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
-              >
-                <MapPin className="w-4 h-4 text-blue-600 mb-1" />
-                <p className="text-sm text-neutral-900">{location}</p>
-              </button>
-            ))}
+            {LOCATIONS.map(location => {
+              const locationImage = LOCATION_IMAGES[location.id] || LOCATION_IMAGES['forum'];
+              return (
+                <button
+                  key={location.id}
+                  onClick={() => onNavigate('booking')}
+                  className="bg-white border border-neutral-200 rounded-lg overflow-hidden hover:border-blue-500 hover:shadow-md transition-all text-left group"
+                >
+                  <div className="relative h-24 overflow-hidden">
+                    <ImageWithFallback
+                      src={locationImage}
+                      alt={location.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
+                  <div className="p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <MapPin className="w-3.5 h-3.5 text-blue-600" />
+                      <p className="text-sm text-neutral-900 font-medium">{location.name}</p>
+                    </div>
+                    <p className="text-xs text-neutral-500 line-clamp-1">{location.address}</p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </section>
       </main>
